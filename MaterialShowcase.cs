@@ -275,6 +275,7 @@ namespace iOSMaterialShowcase.Xamarin
         public static void AddBackground(this MaterialShowcase materialShowcase)
         {
             float radius;
+            float targetViewPadding = 7;
             var center = materialShowcase.GetOuterCircleCenterPoint(materialShowcase.targetCopyView);
 
             if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
@@ -287,7 +288,7 @@ namespace iOSMaterialShowcase.Xamarin
                 Center = center
             };
 			var color = materialShowcase.backgroundPromptColor.ColorWithAlpha (materialShowcase.backgroundPromptColorAlpha);
-			materialShowcase.backgroundView.AsCircleWithTransparentCenter(color, (float)(materialShowcase.targetHolderView.Bounds.Width * .5f - 7));
+			materialShowcase.backgroundView.AsCircleWithTransparentCenter(color, (float)(materialShowcase.targetHolderView.Bounds.Width * .5f - targetViewPadding));
             materialShowcase.InsertSubviewBelow(materialShowcase.backgroundView, materialShowcase.instructionView);
         }
 
