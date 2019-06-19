@@ -96,7 +96,7 @@ namespace iOSMaterialShowcase.Xamarin
         public static void Configure(this MaterialShowcase materialShowcase)
         {
             materialShowcase.BackgroundColor = UIColor.Clear;
-            var window = UIApplication.SharedApplication.Delegate?.GetWindow();
+			var window = UIApplication.SharedApplication.KeyWindow;
             if (window != null)
             {
                 materialShowcase.containerView = window;
