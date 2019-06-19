@@ -299,7 +299,7 @@ namespace iOSMaterialShowcase.Xamarin
                 materialShowcase.showcaseDelegate.ShowCaseWillDismiss();
             if (animated)
             {
-                materialShowcase.targetRippleView.RemoveFromSuperview();
+                //materialShowcase.targetRippleView.RemoveFromSuperview();
                 UIView.AnimateKeyframes(materialShowcase.aniGoOutDuration, 0, UIViewKeyframeAnimationOptions.CalculationModeLinear, () =>
                 {
                     UIView.AddKeyframeWithRelativeStartTime(0, .6f, () =>
@@ -355,7 +355,7 @@ namespace iOSMaterialShowcase.Xamarin
         public static void InitViews(this MaterialShowcase materialShowcase)
         {
             var center = materialShowcase.CalculateCenter(materialShowcase.targetView, materialShowcase.containerView);
-            materialShowcase.AddTargetRipple(center);
+            //materialShowcase.AddTargetRipple(center);
             materialShowcase.AddTargetHolder(center);
             materialShowcase.AddTarget(center);
             materialShowcase.AddInstructionView(center);
@@ -440,13 +440,13 @@ namespace iOSMaterialShowcase.Xamarin
             materialShowcase.containerView.AddSubview(materialShowcase);
             materialShowcase.LayoutIfNeeded();
 
-            var scale = new nfloat(MaterialShowcase.TargetHolderRadius / (materialShowcase.backgroundView.Frame.Width * .5));
             var center = materialShowcase.backgroundView.Center;
 
-            materialShowcase.backgroundView.Transform = CGAffineTransform.MakeScale(scale, scale); // Initial set to support animation
             materialShowcase.backgroundView.Center = materialShowcase.targetHolderView.Center;
             if (animated)
             {
+				var scale = new nfloat (MaterialShowcase.TargetHolderRadius / (materialShowcase.backgroundView.Frame.Width * .5));
+				materialShowcase.backgroundView.Transform = CGAffineTransform.MakeScale (scale, scale); // Initial set to support animation
                 UIView.Animate(materialShowcase.aniComeInDuration, () =>
                 {
                     materialShowcase.targetHolderView.Transform = CGAffineTransform.MakeScale(1, 1);
