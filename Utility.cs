@@ -1,5 +1,8 @@
 ﻿using CoreGraphics;
 using UIKit;
+using CoreAnimation;
+using System;
+using EventKit;
 
 namespace iOSMaterialShowcase.Xamarin
 {
@@ -14,6 +17,21 @@ namespace iOSMaterialShowcase.Xamarin
             _view.Layer.CornerRadius = _view.Frame.Width * .5f;
             _view.Layer.MasksToBounds = true;
         }
+
+		public static void AsCircleWithTransparentCenter (this UIView _view, UIColor backgroundColor, float targetRadius)
+		{
+			var largeRadius = _view.Frame.Width * .5f;
+			var path = new UIBezierPath ();
+			path.AddArc (new CGPoint(_view.Bounds.GetMidX(), _view.Bounds.GetMidY()), (targetRadius + largeRadius) * .5f, 0f, (float)Math.PI * 2, true);
+			var shape = new CAShapeLayer ();
+			shape.Frame = _view.Bounds;
+			shape.Path = path.CGPath;
+			shape.LineWidth = largeRadius - targetRadius;
+			shape.StrokeColor = backgroundColor.CGColor;
+			shape.FillColor = UIColor.Clear.CGColor;
+			_view.Layer.AddSublayer(shape);
+			_view.Layer.MasksToBounds = true;
+		}
 
         public static void SetTintColor(this UIView _view, UIColor _color, bool _recursive)
         {

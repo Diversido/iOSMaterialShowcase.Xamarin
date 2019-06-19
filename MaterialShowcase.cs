@@ -93,7 +93,7 @@ namespace iOSMaterialShowcase.Xamarin
             Below // at lower screen part
         }
 
-        public static void Configure(this MaterialShowcase materialShowcase)
+		public static void Configure(this MaterialShowcase materialShowcase)
         {
             materialShowcase.BackgroundColor = UIColor.Clear;
 			var window = UIApplication.SharedApplication.KeyWindow;
@@ -284,11 +284,11 @@ namespace iOSMaterialShowcase.Xamarin
 
             materialShowcase.backgroundView = new UIView(new CGRect(0, 0, radius * 2, radius * 2))
             {
-                Center = center,
-                BackgroundColor = materialShowcase.backgroundPromptColor.ColorWithAlpha(materialShowcase.backgroundPromptColorAlpha)
+                Center = center
             };
-            materialShowcase.backgroundView.AsCircle();
-            materialShowcase.InsertSubviewBelow(materialShowcase.backgroundView, materialShowcase.targetRippleView);
+			var color = materialShowcase.backgroundPromptColor.ColorWithAlpha (materialShowcase.backgroundPromptColorAlpha);
+			materialShowcase.backgroundView.AsCircleWithTransparentCenter(color, (float)(materialShowcase.targetHolderView.Bounds.Width * .5f - 7));
+            materialShowcase.InsertSubviewBelow(materialShowcase.backgroundView, materialShowcase.instructionView);
         }
 
         /// Default action when dimissing showcase
@@ -447,7 +447,7 @@ namespace iOSMaterialShowcase.Xamarin
             {
 				var scale = new nfloat (MaterialShowcase.TargetHolderRadius / (materialShowcase.backgroundView.Frame.Width * .5));
 				materialShowcase.backgroundView.Transform = CGAffineTransform.MakeScale (scale, scale); // Initial set to support animation
-                UIView.Animate(materialShowcase.aniComeInDuration, () =>
+				UIView.Animate(materialShowcase.aniComeInDuration, () =>
                 {
                     materialShowcase.targetHolderView.Transform = CGAffineTransform.MakeScale(1, 1);
                     materialShowcase.backgroundView.Transform = CGAffineTransform.MakeScale(1, 1);
