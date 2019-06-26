@@ -15,7 +15,7 @@ namespace iOSMaterialShowcase.Xamarin
 
     public class MaterialShowcase : UIView
     {
-        // MARK: Material design guideline constant
+		// MARK: Material design guideline constant
         public const float BackgroundAlpha = .96f;
         public const float TargetHolderRadius = 44f;
         public const float TextCenterOffset = 44f + 20f;
@@ -47,6 +47,7 @@ namespace iOSMaterialShowcase.Xamarin
         public UIView targetRippleView;
         public UIView targetCopyView;
         public MaterialShowcaseInstructionView instructionView;
+		public UIButton dismissButton;
 
         // MARK: Public Properties
 
@@ -67,8 +68,12 @@ namespace iOSMaterialShowcase.Xamarin
         public float secondaryTextSize;
         public UIFont primaryTextFont;
         public UIFont secondaryTextFont;
-        // Animation
-        public float aniComeInDuration;
+		public string dismissText;
+		public UIColor dismissTextColor;
+		public UIColor dismissBackgroundColor;
+		public UIFont dismissTextFont;
+		// Animation
+		public float aniComeInDuration;
         public float aniGoOutDuration;
         public float aniRippleScale;
         public UIColor aniRippleColor;
@@ -84,10 +89,10 @@ namespace iOSMaterialShowcase.Xamarin
 
     public static class MaterialShowcaseExtension
     {
-
-        /// Defines the position of target view
-        /// which helps to place texts at suitable positions
-        public enum TargetPosition
+		public const float SideMenuWidth = 280f;
+		/// Defines the position of target view
+		/// which helps to place texts at suitable positions
+		public enum TargetPosition
         {
             Above, // at upper screen part
             Below // at lower screen part
@@ -137,15 +142,15 @@ namespace iOSMaterialShowcase.Xamarin
             {
                 UIView.AddKeyframeWithRelativeStartTime(0, .5f, () =>
                 {
-                    materialShowcase.targetRippleView.Alpha = MaterialShowcase.AniRippleAlpha;
+                    //materialShowcase.targetRippleView.Alpha = MaterialShowcase.AniRippleAlpha;
                     materialShowcase.targetHolderView.Transform = CGAffineTransform.MakeScale(1.1f, 1.1f);
-                    materialShowcase.targetRippleView.Transform = CGAffineTransform.MakeScale(1.1f, 1.1f);
+                    //materialShowcase.targetRippleView.Transform = CGAffineTransform.MakeScale(1.1f, 1.1f);
                 });
                 UIView.AddKeyframeWithRelativeStartTime(.5f, .5f, () =>
                 {
                     materialShowcase.targetHolderView.Transform = CGAffineTransform.MakeIdentity();
-                    materialShowcase.targetRippleView.Alpha = 0;
-                    materialShowcase.targetRippleView.Transform = CGAffineTransform.MakeScale(materialShowcase.aniRippleScale, materialShowcase.aniRippleScale);
+                    //materialShowcase.targetRippleView.Alpha = 0;
+                    //materialShowcase.targetRippleView.Transform = CGAffineTransform.MakeScale(materialShowcase.aniRippleScale, materialShowcase.aniRippleScale);
                 });
             }, (completion) =>
              {
@@ -252,8 +257,14 @@ namespace iOSMaterialShowcase.Xamarin
             materialShowcase.instructionView.secondaryTextColor = materialShowcase.secondaryTextColor;
             materialShowcase.instructionView.secondaryText = materialShowcase.secondaryText;
 
+			materialShowcase.instructionView.dismissText = materialShowcase.dismissText;
+			materialShowcase.instructionView.dismissTextFont = materialShowcase.dismissTextFont;
+			materialShowcase.instructionView.dismissTextColor = materialShowcase.dismissTextColor;
+			materialShowcase.instructionView.dismissBackgroundColor = materialShowcase.dismissBackgroundColor;
             // Calculate x position
-            var xPosition = MaterialShowcase.LabelMargin;
+            var xPosition = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad
+                && UIDevice.CurrentDevice.Orientation.IsLandscape() ?
+                 MaterialShowcase.LabelMargin + SideMenuWidth : MaterialShowcase.LabelMargin;
 
             // Calculate y position
             float yPosition;
@@ -278,10 +289,12 @@ namespace iOSMaterialShowcase.Xamarin
             float targetViewPadding = 7;
             var center = materialShowcase.GetOuterCircleCenterPoint(materialShowcase.targetCopyView);
 
-            if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-                radius = 300.0f;
-            else
-                radius = materialShowcase.GetOuterCircleRadius(center, materialShowcase.instructionView.Frame, materialShowcase.targetCopyView.Frame);
+			if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad &&
+				UIDevice.CurrentDevice.Orientation.IsLandscape ())
+				radius = (float)materialShowcase.instructionView.Frame.Width - SideMenuWidth;
+
+			else
+				radius = materialShowcase.GetOuterCircleRadius (center, materialShowcase.instructionView.Frame, materialShowcase.targetCopyView.Frame);
 
             materialShowcase.backgroundView = new UIView(new CGRect(0, 0, radius * 2, radius * 2))
             {
@@ -362,13 +375,18 @@ namespace iOSMaterialShowcase.Xamarin
             materialShowcase.AddInstructionView(center);
             materialShowcase.instructionView.LayoutIfNeeded();
             materialShowcase.AddBackground();
+			// Disable subview interaction to let users click to general view only
+			//foreach (var subView in materialShowcase.Subviews)
+                //subView.UserInteractionEnabled = false;
 
-            // Add gesture recognizer for both container and its subview
-            materialShowcase.AddGestureRecognizer(materialShowcase.TapGestureRecoganizer());
-            // Disable subview interaction to let users click to general view only
-            foreach (var subView in materialShowcase.Subviews)
-                subView.UserInteractionEnabled = false;
-        }
+			// Add gesture recognizer for both container and its subview
+			if (materialShowcase.instructionView.dismissButton == null)
+				materialShowcase.AddGestureRecognizer (materialShowcase.TapGestureRecoganizer ());
+			else
+			{
+				materialShowcase.instructionView.dismissButton.AddGestureRecognizer (materialShowcase.TapGestureRecoganizer ());
+			}
+		}
 
         // Gets all UIView from TabBarItem.
         private static List<UIView> OrderedTabBarItemViews(UITabBar ofTabBar)

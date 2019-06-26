@@ -1,5 +1,6 @@
 ﻿using CoreGraphics;
 using UIKit;
+using SlatePages.iOS;
 
 namespace iOSMaterialShowcase.Xamarin
 {
@@ -24,6 +25,12 @@ namespace iOSMaterialShowcase.Xamarin
         public float secondaryTextSize;
         public UIFont primaryTextFont;
         public UIFont secondaryTextFont;
+		public string dismissText;
+		public UIColor dismissTextColor;
+		public UIColor dismissBackgroundColor;
+		public UIFont dismissTextFont;
+
+		public UIButton dismissButton;
 
         public MaterialShowcaseInstructionView()
             : base(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, 0))
@@ -102,15 +109,43 @@ namespace iOSMaterialShowcase.Xamarin
             Frame = new CGRect(Frame.GetMinX(), Frame.GetMinY(), UIScreen.MainScreen.Bounds.Width, primaryLabel.Frame.Height + secondaryLabel.Frame.Height);
         }
 
-        public override void LayoutSubviews()
-        {
-            base.LayoutSubviews();
+        private void AddDismissButton()
+		{
+			var paddingTop = 20f; 
+			dismissButton = new UIButton ();
+			if (dismissTextFont != null)
+				dismissButton.TitleLabel.Font = dismissTextFont;
+			else
+				dismissButton.TitleLabel.Font = UIFont.SystemFontOfSize (secondaryTextSize);
+			dismissButton.SetTitleColor(dismissTextColor, UIControlState.Normal);
+			dismissButton.BackgroundColor = dismissBackgroundColor;
+			dismissButton.SetTitle (dismissText, UIControlState.Normal);
+			dismissButton.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
+			dismissButton.Frame = new CGRect (0, primaryLabel.Frame.Height + secondaryLabel.Frame.Height + paddingTop, Frame.Width, 0);
+			dismissButton.SizeToFit ();
+			dismissButton.SetFrameWidth(dismissButton.Frame.Width + 30f);
 
-            AddPrimaryLabel();
-            AddSecondaryLabel();
+			AddSubview (dismissButton);
+			Frame = new CGRect (Frame.GetMinX (),
+				 Frame.GetMinY (),
+				  UIScreen.MainScreen.Bounds.Width,
+				   primaryLabel.Frame.Height + secondaryLabel.Frame.Height + dismissButton.Frame.Height + paddingTop);
+		}
 
-            foreach (var subview in Subviews)
-                subview.UserInteractionEnabled = false;
-        }
-    }
+		public override void LayoutSubviews ()
+		{
+			base.LayoutSubviews ();
+			AddPrimaryLabel ();
+			AddSecondaryLabel ();
+			if (!string.IsNullOrEmpty (dismissText))
+				AddDismissButton ();
+
+			foreach (var subview in Subviews)
+			    subview.UserInteractionEnabled = false;
+			if (dismissButton != null)
+			{
+				dismissButton.UserInteractionEnabled = true;
+			}
+		}
+	}
 }
